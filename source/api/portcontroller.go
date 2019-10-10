@@ -13,7 +13,7 @@ type portcontrollerhandler struct {
 func (h *portcontrollerhandler) router() chi.Router {
 	r := chi.NewRouter()
 
-	r.Route("/query", func(r chi.Router) {
+	r.Route("/service", func(r chi.Router) {
 		r.Get("/", h.defaultHandler)
 	})
 
@@ -21,5 +21,5 @@ func (h *portcontrollerhandler) router() chi.Router {
 }
 
 func (h *portcontrollerhandler) defaultHandler(w http.ResponseWriter, r *http.Request) {
-	render.JSON(w, r, "emre")
+	render.JSON(w, r, "this is port service")
 }
