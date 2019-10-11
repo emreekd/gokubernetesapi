@@ -1,9 +1,15 @@
 package container
 
-type Bootstrapper interface{
-	Initialize()
+import (
+	"../domain/repository"
+	"./modules"
+)
+
+type Bootstrapper interface {
+	Initialize() *repository.IKubePodRepository
 }
 
-func Initialize(){
-	return nil
+func Initialize() repository.IKubePodRepository {
+	var kubePodRepo = modules.LoadRepositories()
+	return kubePodRepo
 }
