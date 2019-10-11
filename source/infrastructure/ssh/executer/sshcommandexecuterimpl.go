@@ -8,7 +8,7 @@ type SshCommandExecuter struct {
 }
 
 func InitSshExecuter() executerDomain.ISshCommandExecuter {
-	executer := &executerDomain.ISshCommandExecuter{}
+	executer := &SshCommandExecuter{}
 	return executer
 }
 
