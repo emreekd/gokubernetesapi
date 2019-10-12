@@ -17,7 +17,10 @@ func InitKubePodRepository() repository.IKubePodRepository {
 func (r *kubePodRepository) GetAll() *[]entity.KubePod {
 	entities := &[]entity.KubePod{
 		entity.KubePod{
-			Name: "kubepod",
+			Name:     "kubepod",
+			Restarts: "10",
+			Age:      "2 days",
+			Status:   "Running",
 		},
 	}
 

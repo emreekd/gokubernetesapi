@@ -3,11 +3,13 @@ package api
 import (
 	"net/http"
 
+	"../services"
 	"github.com/go-chi/chi"
 	"github.com/go-chi/render"
 )
 
 type portcontrollerhandler struct {
+	kubeService services.IKubeService
 }
 
 func (h *portcontrollerhandler) router() chi.Router {
@@ -21,5 +23,6 @@ func (h *portcontrollerhandler) router() chi.Router {
 }
 
 func (h *portcontrollerhandler) defaultHandler(w http.ResponseWriter, r *http.Request) {
-	render.JSON(w, r, "this is port service")
+	resp := h.kubeService.GetAllPods()
+	render.JSON(w, r, resp)
 }

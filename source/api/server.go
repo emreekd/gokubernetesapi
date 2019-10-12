@@ -3,6 +3,7 @@ package api
 import (
 	"net/http"
 
+	"../services"
 	"github.com/go-chi/chi"
 )
 
@@ -14,12 +15,14 @@ func (s *Server) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	s.router.ServeHTTP(w, r)
 }
 
-func New() *Server {
+func New(kubeService services.IKubeService) *Server {
 	s := &Server{}
 
 	r := chi.NewRouter()
 	r.Route("/port", func(r chi.Router) {
-		h := portcontrollerhandler{}
+		h := portcontrollerhandler{
+			kubeService: kubeService,
+		}
 		r.Mount("/", h.router())
 	})
 
