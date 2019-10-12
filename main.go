@@ -12,14 +12,12 @@ import (
 )
 
 func main() {
-	var kubePodRepo, sshCommandBuilder, kubeService, sshCommandExecuter = Bootstrapper.Initialize()
+	var kubePodRepo, sshCommandBuilder, kubeService = Bootstrapper.Initialize()
 
 	var _ = *kubePodRepo.GetAll()
 
 	cmdReq := &request.SshCommandBuildRequest{}
 	sshCommandBuilder.Build(*cmdReq)
-
-	sshCommandExecuter.Execute("")
 
 	cmd := exec.Command("ls", "-lh")
 	_, err := cmd.Output()

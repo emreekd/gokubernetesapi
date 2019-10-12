@@ -2,7 +2,6 @@ package services
 
 import (
 	"../contract/response"
-	"../domain/executer"
 	"../domain/repository"
 )
 
@@ -11,20 +10,17 @@ type IKubeService interface {
 }
 
 type kubeService struct {
-	kubePodRepository  repository.IKubePodRepository
-	sshCommandExecuter executer.ISshCommandExecuter
+	kubePodRepository repository.IKubePodRepository
 }
 
-func InitKubeService(kpr repository.IKubePodRepository, ce executer.ISshCommandExecuter) IKubeService {
+func InitKubeService(kpr repository.IKubePodRepository) IKubeService {
 	ks := &kubeService{
-		kubePodRepository:  kpr,
-		sshCommandExecuter: ce,
+		kubePodRepository: kpr,
 	}
 	return ks
 }
 
 func (ks *kubeService) GetAllPods() response.GetAllPodsResponse {
-	var _ = ks.sshCommandExecuter.Execute("")
 	var resp = new(response.GetAllPodsResponse)
 	var entities = ks.kubePodRepository.GetAll()
 	for _, entity := range *entities {

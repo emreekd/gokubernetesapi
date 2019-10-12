@@ -1,8 +1,6 @@
 package executer
 
 import (
-	"strings"
-
 	"../../../contract/request"
 	builderDomain "../../../domain/builder"
 	executerDomain "../../../domain/executer"
@@ -31,14 +29,6 @@ func (e *SshCommandExecuter) Execute(cmd string) string {
 	if err != nil {
 		println(err.Error())
 		return err.Error()
-	}
-	podInfos := strings.Split(string(stdout), "\n")
-
-	for _, podInfo := range podInfos {
-		podFields := strings.Fields(podInfo)
-		if podFields != nil && len(podFields) > 2 {
-			println(podFields[2])
-		}
 	}
 
 	return string(stdout)
