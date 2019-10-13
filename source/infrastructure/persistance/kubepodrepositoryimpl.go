@@ -21,7 +21,7 @@ func InitKubePodRepository(ce executer.ISshCommandExecuter) repository.IKubePodR
 }
 
 func (r *kubePodRepository) GetAll() *[]entity.KubePod {
-	var stringResult = r.sshCommandExecuter.Execute("kubectl get pod -n namespace")
+	var stringResult = r.sshCommandExecuter.Execute("ls", "-lh")
 
 	podInfos := strings.Split(string(stringResult), "\n")
 	entities := make([]entity.KubePod, 0)

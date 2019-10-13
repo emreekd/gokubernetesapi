@@ -17,10 +17,10 @@ func InitSshExecuter(cb builderDomain.ISshCommandBuilder) executerDomain.ISshCom
 	return executer
 }
 
-func (e *SshCommandExecuter) Execute(cmd string) string {
+func (e *SshCommandExecuter) Execute(cmdName string, cmd string) string {
 	buildRequest := &request.SshCommandBuildRequest{
-		CommandName: "ls",
-		Command:     "-lh",
+		CommandName: cmdName,
+		Command:     cmd,
 	}
 	var execCommand = e.sshCommandBuilder.Build(*buildRequest)
 

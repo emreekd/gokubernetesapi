@@ -1,5 +1,5 @@
 package executer
 
 type ISshCommandExecuter interface {
-	Execute(cmd string) string
+	Execute(cmdName string, cmd string) string
 }
