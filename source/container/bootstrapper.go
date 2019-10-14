@@ -16,6 +16,6 @@ func Initialize() (repository.IKubePodRepository, builder.ISshCommandBuilder, se
 	var sshExecuter = modules.LoadExecuters(sshCommandBuilder)
 	var kubePodRepo = modules.LoadRepositories(sshExecuter)
 	var kubeService = modules.LoadServices(kubePodRepo)
-	//var sshClient = modules.LoadClients("ip", "user", "password")
+	//var sshClient = modules.LoadClients("ip", "user", "password") // pass this client to executer
 	return kubePodRepo, sshCommandBuilder, kubeService
 }
