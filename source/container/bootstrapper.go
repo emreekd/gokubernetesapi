@@ -1,21 +1,20 @@
 package container
 
 import (
-	"../domain/builder"
-	"../domain/repository"
 	"../services"
 	"./modules"
 )
 
 type Bootstrapper interface {
-	Initialize() (*repository.IKubePodRepository, *builder.ISshCommandBuilder, *services.IKubeService)
+	Initialize() *services.IKubeService
 }
 
-func Initialize() (repository.IKubePodRepository, builder.ISshCommandBuilder, services.IKubeService) {
+func Initialize() services.IKubeService {
 	var sshCommandBuilder = modules.LoadBuilders()
-	var sshExecuter = modules.LoadExecuters(sshCommandBuilder)
+	var sshClient = modules.LoadClients() // pass this client to executer
+	var sshExecuter = modules.LoadExecuters(sshCommandBuilder, sshClient)
 	var kubePodRepo = modules.LoadRepositories(sshExecuter)
 	var kubeService = modules.LoadServices(kubePodRepo)
-	//var sshClient = modules.LoadClients("ip", "user", "password") // pass this client to executer
-	return kubePodRepo, sshCommandBuilder, kubeService
+
+	return kubeService
 }

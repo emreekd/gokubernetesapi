@@ -15,6 +15,10 @@ func InitSshCommandBuilder() sshBuilder.ISshCommandBuilder {
 	return builder
 }
 
+func (b *SshCommandBuilder) BuildSshCommand(request request.SshCommandBuildRequest) string {
+	return request.CommandName + " " + request.Command
+}
+
 func (b *SshCommandBuilder) Build(request request.SshCommandBuildRequest) *exec.Cmd {
 	cmd := exec.Command(request.CommandName, request.Command)
 	return cmd

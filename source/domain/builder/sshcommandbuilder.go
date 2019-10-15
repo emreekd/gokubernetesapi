@@ -8,4 +8,5 @@ import (
 
 type ISshCommandBuilder interface {
 	Build(Request request.SshCommandBuildRequest) *exec.Cmd
+	BuildSshCommand(request request.SshCommandBuildRequest) string
 }

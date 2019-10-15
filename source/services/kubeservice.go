@@ -7,6 +7,7 @@ import (
 
 type IKubeService interface {
 	GetAllPods() response.GetAllPodsResponse
+	GetByNamespace(namespace string) response.GetAllPodsResponse
 }
 
 type kubeService struct {
@@ -18,6 +19,21 @@ func InitKubeService(kpr repository.IKubePodRepository) IKubeService {
 		kubePodRepository: kpr,
 	}
 	return ks
+}
+
+func (ks *kubeService) GetByNamespace(namespace string) response.GetAllPodsResponse {
+	var resp = new(response.GetAllPodsResponse)
+	var entities = ks.kubePodRepository.GetByNamespace(namespace)
+	for _, entity := range *entities {
+		newPod := &response.Pod{
+			Name:     entity.Name,
+			Status:   entity.Status,
+			Restarts: entity.Restarts,
+			Age:      entity.Age,
+		}
+		resp.Pods = append(resp.Pods, *newPod)
+	}
+	return *resp
 }
 
 func (ks *kubeService) GetAllPods() response.GetAllPodsResponse {

@@ -9,7 +9,7 @@ type ClientModule interface {
 	LoadClients() *clientDomain.ISshClient
 }
 
-func LoadClients(ip string, username string, password string) clientDomain.ISshClient {
-	sshClient := client.InitSshClient(ip, username, password)
+func LoadClients() clientDomain.ISshClient {
+	sshClient := client.InitSshClient()
 	return sshClient
 }

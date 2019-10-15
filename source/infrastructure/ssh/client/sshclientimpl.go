@@ -1,15 +1,22 @@
 package client
 
 import (
+	"fmt"
+
 	sshClientDomain "../../../domain/client"
 	"golang.org/x/crypto/ssh"
 )
 
 type SshClient struct {
-	connection ssh.Client
 }
 
-func InitSshClient(ip string, username string, password string) sshClientDomain.ISshClient {
+func InitSshClient() sshClientDomain.ISshClient {
+
+	sshClient := &SshClient{}
+	return sshClient
+}
+
+func (sc *SshClient) GetConnection(host string, username string, password string) ssh.Client {
 	config := &ssh.ClientConfig{
 		User: username,
 		Auth: []ssh.AuthMethod{
@@ -17,11 +24,10 @@ func InitSshClient(ip string, username string, password string) sshClientDomain.
 		},
 		HostKeyCallback: ssh.InsecureIgnoreHostKey(),
 	}
-	sshConn, _ := ssh.Dial("tcp", ip, config)
-	defer sshConn.Close()
 
-	sshClient := &SshClient{
-		connection: *sshConn,
+	sshConn, err := ssh.Dial("tcp", host, config)
+	if err != nil {
+		fmt.Println(err.Error())
 	}
-	return sshClient
+	return *sshConn
 }

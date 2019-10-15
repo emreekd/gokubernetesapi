@@ -2,6 +2,7 @@ package api
 
 import (
 	"net/http"
+	"strings"
 
 	"../services"
 	"github.com/go-chi/chi"
@@ -16,13 +17,17 @@ func (h *portcontrollerhandler) router() chi.Router {
 	r := chi.NewRouter()
 
 	r.Route("/service", func(r chi.Router) {
-		r.Get("/", h.defaultHandler)
+		r.Get("/*", h.defaultHandler)
 	})
 
 	return r
 }
 
 func (h *portcontrollerhandler) defaultHandler(w http.ResponseWriter, r *http.Request) {
-	resp := h.kubeService.GetAllPods()
-	render.JSON(w, r, resp)
+
+	var pathInfo = strings.Split(r.RequestURI, "/")
+	if pathInfo != nil && len(pathInfo) > 2 {
+		resp := h.kubeService.GetByNamespace(pathInfo[len(pathInfo)-1])
+		render.JSON(w, r, resp)
+	}
 }
