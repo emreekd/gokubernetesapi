@@ -5,5 +5,6 @@ type GetNodesResponse struct {
 }
 
 type Node struct {
-	InternalIp string `json:"internalip"`
+	InternalIp string `json:"value"`
+	Label      string `json:"label"`
 }

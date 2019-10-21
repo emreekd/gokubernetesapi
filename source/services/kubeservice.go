@@ -48,6 +48,7 @@ func (ks *kubeService) GetNodes() response.GetNodesResponse {
 	for _, entity := range *entities {
 		newNode := &response.Node{
 			InternalIp: entity.InternalIp,
+			Label:      entity.InternalIp,
 		}
 		resp.Nodes = append(resp.Nodes, *newNode)
 	}
