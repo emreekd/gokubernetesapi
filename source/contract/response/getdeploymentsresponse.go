@@ -11,4 +11,5 @@ type Deployment struct {
 	Available     string `json:"available"`
 	Age           string `json:"age"`
 	ContainerName string `json:"containerName"`
+	Image         string `json:"image"`
 }

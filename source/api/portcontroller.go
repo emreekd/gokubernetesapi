@@ -22,7 +22,8 @@ func (h *portcontrollerhandler) router() chi.Router {
 		r.Get("/*", h.defaultHandler)
 	})
 	r.Route("/deployments", func(r chi.Router) {
-		r.Post("/", h.deploymentsHandler)
+		r.Post("/list", h.deploymentsHandler)
+		r.Post("/update", h.deploymentUpdateHandler)
 	})
 	r.Route("/forward", func(r chi.Router) {
 		r.Post("/", h.portforwardHandler)
@@ -63,6 +64,21 @@ func (h *portcontrollerhandler) deploymentsHandler(w http.ResponseWriter, r *htt
 	_ = json.Unmarshal(reqBoyd, &requestObj)
 
 	resp := h.kubeService.GetDeployments(requestObj.Namespace)
+
+	render.JSON(w, r, resp)
+}
+
+func (h *portcontrollerhandler) deploymentUpdateHandler(w http.ResponseWriter, r *http.Request) {
+	reqBoyd, _ := ioutil.ReadAll(r.Body)
+	requestObj := struct {
+		Namespace      string `json:"namespace"`
+		ContainerName  string `json:"containername"`
+		NewImage       string `json:"newimage"`
+		DeploymentName string `json:"deploymentname"`
+	}{}
+	_ = json.Unmarshal(reqBoyd, &requestObj)
+
+	resp := h.kubeService.UpdateImageForDeployment(requestObj.DeploymentName,requestObj.ContainerName,requestObj.NewImage,requestObj.Namespace)
 
 	render.JSON(w, r, resp)
 }

@@ -12,6 +12,7 @@ type IKubeService interface {
 	GetPortForwardCommand(podname string, namespace string, destinationPort string, localPort string) string
 	GetNamespaces() response.GetNamespacesResponse
 	GetNodes() response.GetNodesResponse
+	UpdateImageForDeployment(deploymentName string, containerName string, newImage string, namespace string) bool
 }
 
 type kubeService struct {
@@ -77,6 +78,7 @@ func (ks *kubeService) GetDeployments(namespace string) response.GetDeploymentsR
 			Available:     entity.Available,
 			Age:           entity.Age,
 			ContainerName: entity.ContainerName,
+			Image: entity.Image,
 		}
 		resp.Deployments = append(resp.Deployments, *newDep)
 	}
@@ -85,6 +87,10 @@ func (ks *kubeService) GetDeployments(namespace string) response.GetDeploymentsR
 
 func (ks *kubeService) GetPortForwardCommand(podname string, namespace string, destinationPort string, localPort string) string {
 	return "kubectl port-forward " + podname + " -n " + namespace + " " + destinationPort + ":" + localPort
+}
+
+func (ks *kubeService) UpdateImageForDeployment(deploymentName string, containerName string, newImage string, namespace string) bool {
+	return ks.kubePodRepository.UpdateImageForDeployment(deploymentName, containerName, newImage, namespace)
 }
 
 func (ks *kubeService) GetAllPods() response.GetAllPodsResponse {

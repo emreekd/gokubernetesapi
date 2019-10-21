@@ -10,4 +10,5 @@ type IKubePodRepository interface {
 	GetDeployments(namespace string) *[]entity.Deployment
 	GetNamespaces() *[]entity.Namespace
 	GetNodes() *[]entity.Node
+	UpdateImageForDeployment(deploymentName string, containerName string, newImage string, namespace string) bool
 }

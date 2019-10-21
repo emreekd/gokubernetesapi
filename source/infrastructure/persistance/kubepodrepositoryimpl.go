@@ -64,8 +64,10 @@ func (r *kubePodRepository) GetDeployments(namespace string) *[]entity.Deploymen
 		deploymentFields := strings.Fields(deploymentInfo)
 		if deploymentFields != nil && len(deploymentFields) >= 4 {
 			var containerNameResult = r.sshCommandExecuter.RunSshCommand("192.168.55.196:22", "root", "Srvhb0420", "kubectl",
-				"get deployment "+deploymentFields[0]+" -n "+namespace+" -o=jsonpath='{..containers[0].name}'")
-			containerName := string(containerNameResult)
+				"get deployment "+deploymentFields[0]+" -n "+namespace+" -o=jsonpath='{..containers[0].name}{\" \"}{..containers[0].image}'")
+			containerInfos := strings.Split(string(containerNameResult), " ")
+			containerName := containerInfos[0]
+			imageName := containerInfos[1]
 			newEntitiy := entity.Deployment{
 				Name:          deploymentFields[0],
 				Ready:         deploymentFields[1],
@@ -73,6 +75,7 @@ func (r *kubePodRepository) GetDeployments(namespace string) *[]entity.Deploymen
 				Available:     deploymentFields[3],
 				Age:           deploymentFields[4],
 				ContainerName: containerName,
+				Image:         imageName,
 			}
 			entities = append(entities, newEntitiy)
 		}
