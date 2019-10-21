@@ -78,9 +78,14 @@ func (h *portcontrollerhandler) deploymentUpdateHandler(w http.ResponseWriter, r
 	}{}
 	_ = json.Unmarshal(reqBoyd, &requestObj)
 
-	resp := h.kubeService.UpdateImageForDeployment(requestObj.DeploymentName,requestObj.ContainerName,requestObj.NewImage,requestObj.Namespace)
+	resp := h.kubeService.UpdateImageForDeployment(requestObj.DeploymentName, requestObj.ContainerName, requestObj.NewImage, requestObj.Namespace)
 
-	render.JSON(w, r, resp)
+	respObject := struct {
+		Success bool `json:"success"`
+	}{
+		Success: resp,
+	}
+	render.JSON(w, r, respObject)
 }
 
 func (h *portcontrollerhandler) portforwardHandler(w http.ResponseWriter, r *http.Request) {

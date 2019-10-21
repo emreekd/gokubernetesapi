@@ -1,6 +1,7 @@
 package persistance
 
 import (
+	"fmt"
 	"strings"
 
 	"../../domain/entity"
@@ -87,7 +88,8 @@ func (r *kubePodRepository) UpdateImageForDeployment(deploymentName string, cont
 	var stringResult = r.sshCommandExecuter.RunSshCommand("192.168.55.196:22", "root", "Srvhb0420",
 		"kubectl", "set image deployment/"+deploymentName+" "+containerName+"="+newImage+" -n "+namespace)
 	result := string(stringResult)
-	if result == "" {
+	fmt.Println(result)
+	if result == "" || strings.Contains(result, "updated") {
 		return true
 	}
 	return false

@@ -78,7 +78,7 @@ func (ks *kubeService) GetDeployments(namespace string) response.GetDeploymentsR
 			Available:     entity.Available,
 			Age:           entity.Age,
 			ContainerName: entity.ContainerName,
-			Image: entity.Image,
+			Image:         entity.Image,
 		}
 		resp.Deployments = append(resp.Deployments, *newDep)
 	}
