@@ -9,4 +9,5 @@ type IKubePodRepository interface {
 	GetByNamespace(namespace string) *[]entity.KubePod
 	GetDeployments(namespace string) *[]entity.Deployment
 	GetNamespaces() *[]entity.Namespace
+	GetNodes() *[]entity.Node
 }

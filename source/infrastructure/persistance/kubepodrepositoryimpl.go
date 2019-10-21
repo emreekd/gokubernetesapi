@@ -25,6 +25,19 @@ func (r *kubePodRepository) GetPodInfo(podName string, namespace string) string 
 	return string(stringResult)
 }
 
+func (r *kubePodRepository) GetNodes() *[]entity.Node {
+	entities := make([]entity.Node, 0)
+	var stringResult = r.sshCommandExecuter.RunSshCommand("192.168.55.196:22", "root", "Srvhb0420", "kubectl", "get nodes -o jsonpath='{.items[*].status.addresses[?(@.type==\"InternalIP\")].address}'")
+	var nodeInfos = strings.Split(string(stringResult), " ")
+	for _, node := range nodeInfos {
+		newNode := entity.Node{
+			InternalIp: node,
+		}
+		entities = append(entities, newNode)
+	}
+	return &entities
+}
+
 func (r *kubePodRepository) GetNamespaces() *[]entity.Namespace {
 	entities := make([]entity.Namespace, 0)
 	var stringResult = r.sshCommandExecuter.RunSshCommand("192.168.55.196:22", "root", "Srvhb0420", "kubectl", "get namespaces")

@@ -30,6 +30,9 @@ func (h *portcontrollerhandler) router() chi.Router {
 	r.Route("/namespaces", func(r chi.Router) {
 		r.Get("/*", h.namespaceHandler)
 	})
+	r.Route("/nodes", func(r chi.Router) {
+		r.Get("/*", h.kubeNodesHandler)
+	})
 
 	return r
 }
@@ -77,5 +80,10 @@ func (h *portcontrollerhandler) portforwardHandler(w http.ResponseWriter, r *htt
 	resp := h.kubeService.GetPortForwardCommand(requestObj.PodName, requestObj.Namespace,
 		requestObj.DestinationPort, requestObj.LocalPort)
 
+	render.JSON(w, r, resp)
+}
+
+func (h *portcontrollerhandler) kubeNodesHandler(w http.ResponseWriter, r *http.Request) {
+	resp := h.kubeService.GetNodes()
 	render.JSON(w, r, resp)
 }

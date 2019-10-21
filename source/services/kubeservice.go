@@ -11,6 +11,7 @@ type IKubeService interface {
 	GetDeployments(namespace string) response.GetDeploymentsResponse
 	GetPortForwardCommand(podname string, namespace string, destinationPort string, localPort string) string
 	GetNamespaces() response.GetNamespacesResponse
+	GetNodes() response.GetNodesResponse
 }
 
 type kubeService struct {
@@ -35,6 +36,18 @@ func (ks *kubeService) GetByNamespace(namespace string) response.GetAllPodsRespo
 			Age:      entity.Age,
 		}
 		resp.Pods = append(resp.Pods, *newPod)
+	}
+	return *resp
+}
+
+func (ks *kubeService) GetNodes() response.GetNodesResponse {
+	var resp = new(response.GetNodesResponse)
+	var entities = ks.kubePodRepository.GetNodes()
+	for _, entity := range *entities {
+		newNode := &response.Node{
+			InternalIp: entity.InternalIp,
+		}
+		resp.Nodes = append(resp.Nodes, *newNode)
 	}
 	return *resp
 }
