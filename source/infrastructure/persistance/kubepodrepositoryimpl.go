@@ -26,6 +26,15 @@ func (r *kubePodRepository) GetPodInfo(podName string, namespace string) string 
 	return string(stringResult)
 }
 
+func (r *kubePodRepository) RestartPod(podName string, namespace string) bool {
+	var stringResult = r.sshCommandExecuter.RunSshCommand("192.168.55.196:22", "root", "Srvhb0420", "kubectl", "delete pod "+podName+"  -n "+namespace)
+	var result = string(stringResult)
+	if strings.Contains(result, podName) && strings.Contains(result, "deleted") {
+		return true
+	}
+	return false
+}
+
 func (r *kubePodRepository) GetNodes() *[]entity.Node {
 	entities := make([]entity.Node, 0)
 	var stringResult = r.sshCommandExecuter.RunSshCommand("192.168.55.196:22", "root", "Srvhb0420", "kubectl", "get nodes -o jsonpath='{.items[*].status.addresses[?(@.type==\"InternalIP\")].address}'")

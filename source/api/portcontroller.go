@@ -34,8 +34,30 @@ func (h *portcontrollerhandler) router() chi.Router {
 	r.Route("/nodes", func(r chi.Router) {
 		r.Get("/*", h.kubeNodesHandler)
 	})
+	r.Route("/pod", func(r chi.Router) {
+		r.Post("/restart", h.kubePodHandler)
+	})
 
 	return r
+}
+
+func (h *portcontrollerhandler) kubePodHandler(w http.ResponseWriter, r *http.Request) {
+	reqBoyd, _ := ioutil.ReadAll(r.Body)
+	requestObj := struct {
+		Namespace string `json:"namespace"`
+		PodName   string `json:"podname"`
+	}{}
+	_ = json.Unmarshal(reqBoyd, &requestObj)
+
+	resp := h.kubeService.RestartPod(requestObj.PodName, requestObj.Namespace)
+
+	respObject := struct {
+		Success bool `json:"success"`
+	}{
+		Success: resp,
+	}
+
+	render.JSON(w, r, respObject)
 }
 
 func (h *portcontrollerhandler) defaultHandler(w http.ResponseWriter, r *http.Request) {

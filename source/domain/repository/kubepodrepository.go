@@ -11,4 +11,5 @@ type IKubePodRepository interface {
 	GetNamespaces() *[]entity.Namespace
 	GetNodes() *[]entity.Node
 	UpdateImageForDeployment(deploymentName string, containerName string, newImage string, namespace string) bool
+	RestartPod(podName string, namespace string) bool
 }

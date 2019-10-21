@@ -13,6 +13,7 @@ type IKubeService interface {
 	GetNamespaces() response.GetNamespacesResponse
 	GetNodes() response.GetNodesResponse
 	UpdateImageForDeployment(deploymentName string, containerName string, newImage string, namespace string) bool
+	RestartPod(podName string, namespace string) bool
 }
 
 type kubeService struct {
@@ -91,6 +92,10 @@ func (ks *kubeService) GetPortForwardCommand(podname string, namespace string, d
 
 func (ks *kubeService) UpdateImageForDeployment(deploymentName string, containerName string, newImage string, namespace string) bool {
 	return ks.kubePodRepository.UpdateImageForDeployment(deploymentName, containerName, newImage, namespace)
+}
+
+func (ks *kubeService) RestartPod(podName string, namespace string) bool {
+	return ks.kubePodRepository.RestartPod(podName, namespace)
 }
 
 func (ks *kubeService) GetAllPods() response.GetAllPodsResponse {
