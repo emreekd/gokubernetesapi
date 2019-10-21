@@ -27,6 +27,9 @@ func (h *portcontrollerhandler) router() chi.Router {
 	r.Route("/forward", func(r chi.Router) {
 		r.Post("/", h.portforwardHandler)
 	})
+	r.Route("/namespaces", func(r chi.Router) {
+		r.Get("/*", h.namespaceHandler)
+	})
 
 	return r
 }
@@ -36,6 +39,15 @@ func (h *portcontrollerhandler) defaultHandler(w http.ResponseWriter, r *http.Re
 	var pathInfo = strings.Split(r.RequestURI, "/")
 	if pathInfo != nil && len(pathInfo) > 2 {
 		resp := h.kubeService.GetByNamespace(pathInfo[len(pathInfo)-1])
+		render.JSON(w, r, resp)
+	}
+}
+
+func (h *portcontrollerhandler) namespaceHandler(w http.ResponseWriter, r *http.Request) {
+
+	var pathInfo = strings.Split(r.RequestURI, "/")
+	if pathInfo != nil && len(pathInfo) > 2 {
+		resp := h.kubeService.GetNamespaces()
 		render.JSON(w, r, resp)
 	}
 }

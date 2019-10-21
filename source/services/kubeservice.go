@@ -10,6 +10,7 @@ type IKubeService interface {
 	GetByNamespace(namespace string) response.GetAllPodsResponse
 	GetDeployments(namespace string) response.GetDeploymentsResponse
 	GetPortForwardCommand(podname string, namespace string, destinationPort string, localPort string) string
+	GetNamespaces() response.GetNamespacesResponse
 }
 
 type kubeService struct {
@@ -34,6 +35,20 @@ func (ks *kubeService) GetByNamespace(namespace string) response.GetAllPodsRespo
 			Age:      entity.Age,
 		}
 		resp.Pods = append(resp.Pods, *newPod)
+	}
+	return *resp
+}
+
+func (ks *kubeService) GetNamespaces() response.GetNamespacesResponse {
+	var resp = new(response.GetNamespacesResponse)
+	var entities = ks.kubePodRepository.GetNamespaces()
+	for _, entity := range *entities {
+		newDep := &response.Namespace{
+			Name:   entity.Name,
+			Age:    entity.Age,
+			Status: entity.Status,
+		}
+		resp.Namespaces = append(resp.Namespaces, *newDep)
 	}
 	return *resp
 }

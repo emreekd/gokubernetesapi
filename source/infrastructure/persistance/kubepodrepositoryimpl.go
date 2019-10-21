@@ -25,6 +25,24 @@ func (r *kubePodRepository) GetPodInfo(podName string, namespace string) string 
 	return string(stringResult)
 }
 
+func (r *kubePodRepository) GetNamespaces() *[]entity.Namespace {
+	entities := make([]entity.Namespace, 0)
+	var stringResult = r.sshCommandExecuter.RunSshCommand("192.168.55.196:22", "root", "Srvhb0420", "kubectl", "get namespaces")
+	namespaceInfos := strings.Split(string(stringResult), "\n")
+	for _, namespaceInfo := range namespaceInfos[1:] {
+		namespaceFielads := strings.Fields(namespaceInfo)
+		if namespaceFielads != nil && len(namespaceFielads) >= 2 {
+			newEntitiy := entity.Namespace{
+				Name:   namespaceFielads[0],
+				Status: namespaceFielads[1],
+				Age:    namespaceFielads[2],
+			}
+			entities = append(entities, newEntitiy)
+		}
+	}
+	return &entities
+}
+
 func (r *kubePodRepository) GetDeployments(namespace string) *[]entity.Deployment {
 	entities := make([]entity.Deployment, 0)
 	var stringResult = r.sshCommandExecuter.RunSshCommand("192.168.55.196:22", "root", "Srvhb0420", "kubectl", "get deployments -n "+namespace)
