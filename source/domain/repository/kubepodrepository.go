@@ -7,4 +7,5 @@ import (
 type IKubePodRepository interface {
 	GetAll() *[]entity.KubePod
 	GetByNamespace(namespace string) *[]entity.KubePod
+	GetDeployments(namespace string) *[]entity.Deployment
 }
