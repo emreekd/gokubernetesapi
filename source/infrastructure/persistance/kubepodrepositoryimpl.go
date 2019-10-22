@@ -70,27 +70,54 @@ func (r *kubePodRepository) GetDeployments(namespace string) *[]entity.Deploymen
 	entities := make([]entity.Deployment, 0)
 	var stringResult = r.sshCommandExecuter.RunSshCommand("192.168.55.196:22", "root", "Srvhb0420", "kubectl", "get deployments -n "+namespace)
 	deploymentInfos := strings.Split(string(stringResult), "\n")
+	containerInfoResults := make(chan *deploymentInfoResult, 0)
+	channelLength := 0
 	for _, deploymentInfo := range deploymentInfos[1:] {
 		deploymentFields := strings.Fields(deploymentInfo)
 		if deploymentFields != nil && len(deploymentFields) >= 4 {
-			var containerNameResult = r.sshCommandExecuter.RunSshCommand("192.168.55.196:22", "root", "Srvhb0420", "kubectl",
-				"get deployment "+deploymentFields[0]+" -n "+namespace+" -o=jsonpath='{..containers[0].name}{\" \"}{..containers[0].image}'")
-			containerInfos := strings.Split(string(containerNameResult), " ")
-			containerName := containerInfos[0]
-			imageName := containerInfos[1]
-			newEntitiy := entity.Deployment{
-				Name:          deploymentFields[0],
-				Ready:         deploymentFields[1],
-				UpToDate:      deploymentFields[2],
-				Available:     deploymentFields[3],
-				Age:           deploymentFields[4],
-				ContainerName: containerName,
-				Image:         imageName,
-			}
-			entities = append(entities, newEntitiy)
+			channelLength++
+			go func() {
+				containerInfoResults <- GetDeploymentInfo(r.sshCommandExecuter, deploymentFields, namespace)
+			}()
 		}
 	}
+	for i := 0; i < channelLength; i++ {
+		containerInfoResult := <-containerInfoResults
+		containerInfos := strings.Split(string(containerInfoResult.CommandResult), " ")
+		containerName := containerInfos[1]
+		imageName := containerInfos[2]
+		containerInfoResult.Deployment.ContainerName = containerName
+		containerInfoResult.Deployment.Image = imageName
+
+		entities = append(entities, containerInfoResult.Deployment)
+	}
 	return &entities
+}
+
+type deploymentInfoResult struct {
+	Deployment    entity.Deployment
+	CommandResult string
+}
+
+func GetDeploymentInfo(sshCommandExecuter executer.ISshCommandExecuter, deploymentFields []string, namespace string) *deploymentInfoResult {
+	cmdResult := sshCommandExecuter.RunSshCommand("192.168.55.196:22", "root", "Srvhb0420", "kubectl",
+		"get deployment "+deploymentFields[0]+" -n "+namespace+" -o=jsonpath='{.metadata.name}{\" \"}{..containers[0].name}{\" \"}{..containers[0].image}'")
+
+	newEntity := entity.Deployment{
+		Name:      deploymentFields[0],
+		Ready:     deploymentFields[1],
+		UpToDate:  deploymentFields[2],
+		Available: deploymentFields[3],
+		Age:       deploymentFields[4],
+	}
+
+	deploymentInfo := &deploymentInfoResult{
+		Deployment:    newEntity,
+		CommandResult: cmdResult,
+	}
+
+	return deploymentInfo
+
 }
 
 func (r *kubePodRepository) UpdateImageForDeployment(deploymentName string, containerName string, newImage string, namespace string) bool {
