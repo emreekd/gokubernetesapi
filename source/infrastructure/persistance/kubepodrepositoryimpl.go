@@ -22,12 +22,12 @@ func InitKubePodRepository(ce executer.ISshCommandExecuter) repository.IKubePodR
 }
 
 func (r *kubePodRepository) GetPodInfo(podName string, namespace string) string {
-	var stringResult = r.sshCommandExecuter.RunSshCommand("192.168.55.196:22", "root", "Srvhb0420", "kubectl", "get pod "+podName+"  -n "+namespace+" -o json")
+	var stringResult = r.sshCommandExecuter.RunSshCommand("host","username","password", "kubectl", "get pod "+podName+"  -n "+namespace+" -o json")
 	return string(stringResult)
 }
 
 func (r *kubePodRepository) RestartPod(podName string, namespace string) bool {
-	var stringResult = r.sshCommandExecuter.RunSshCommand("192.168.55.196:22", "root", "Srvhb0420", "kubectl", "delete pod "+podName+"  -n "+namespace)
+	var stringResult = r.sshCommandExecuter.RunSshCommand("host","username","password", "kubectl", "delete pod "+podName+"  -n "+namespace)
 	var result = string(stringResult)
 	if strings.Contains(result, podName) && strings.Contains(result, "deleted") {
 		return true
@@ -37,7 +37,7 @@ func (r *kubePodRepository) RestartPod(podName string, namespace string) bool {
 
 func (r *kubePodRepository) GetNodes() *[]entity.Node {
 	entities := make([]entity.Node, 0)
-	var stringResult = r.sshCommandExecuter.RunSshCommand("192.168.55.196:22", "root", "Srvhb0420", "kubectl", "get nodes -o jsonpath='{.items[*].status.addresses[?(@.type==\"InternalIP\")].address}'")
+	var stringResult = r.sshCommandExecuter.RunSshCommand("host","username","password", "kubectl", "get nodes -o jsonpath='{.items[*].status.addresses[?(@.type==\"InternalIP\")].address}'")
 	var nodeInfos = strings.Split(string(stringResult), " ")
 	for _, node := range nodeInfos {
 		newNode := entity.Node{
@@ -50,7 +50,7 @@ func (r *kubePodRepository) GetNodes() *[]entity.Node {
 
 func (r *kubePodRepository) GetNamespaces() *[]entity.Namespace {
 	entities := make([]entity.Namespace, 0)
-	var stringResult = r.sshCommandExecuter.RunSshCommand("192.168.55.196:22", "root", "Srvhb0420", "kubectl", "get namespaces")
+	var stringResult = r.sshCommandExecuter.RunSshCommand("host","username","password", "kubectl", "get namespaces")
 	namespaceInfos := strings.Split(string(stringResult), "\n")
 	for _, namespaceInfo := range namespaceInfos[1:] {
 		namespaceFielads := strings.Fields(namespaceInfo)
@@ -68,7 +68,7 @@ func (r *kubePodRepository) GetNamespaces() *[]entity.Namespace {
 
 func (r *kubePodRepository) GetDeployments(namespace string) *[]entity.Deployment {
 	entities := make([]entity.Deployment, 0)
-	var stringResult = r.sshCommandExecuter.RunSshCommand("192.168.55.196:22", "root", "Srvhb0420", "kubectl", "get deployments -n "+namespace)
+	var stringResult = r.sshCommandExecuter.RunSshCommand("host","username","password", "kubectl", "get deployments -n "+namespace)
 	deploymentInfos := strings.Split(string(stringResult), "\n")
 	containerInfoResults := make(chan *deploymentInfoResult, 0)
 	channelLength := 0
@@ -100,7 +100,7 @@ type deploymentInfoResult struct {
 }
 
 func GetDeploymentInfo(sshCommandExecuter executer.ISshCommandExecuter, deploymentFields []string, namespace string) *deploymentInfoResult {
-	cmdResult := sshCommandExecuter.RunSshCommand("192.168.55.196:22", "root", "Srvhb0420", "kubectl",
+	cmdResult := sshCommandExecuter.RunSshCommand("host","username","password", "kubectl",
 		"get deployment "+deploymentFields[0]+" -n "+namespace+" -o=jsonpath='{.metadata.name}{\" \"}{..containers[0].name}{\" \"}{..containers[0].image}'")
 
 	newEntity := entity.Deployment{
@@ -121,7 +121,7 @@ func GetDeploymentInfo(sshCommandExecuter executer.ISshCommandExecuter, deployme
 }
 
 func (r *kubePodRepository) UpdateImageForDeployment(deploymentName string, containerName string, newImage string, namespace string) bool {
-	var stringResult = r.sshCommandExecuter.RunSshCommand("192.168.55.196:22", "root", "Srvhb0420",
+	var stringResult = r.sshCommandExecuter.RunSshCommand("host","username","password",
 		"kubectl", "set image deployment/"+deploymentName+" "+containerName+"="+newImage+" -n "+namespace)
 	result := string(stringResult)
 	fmt.Println(result)
@@ -133,7 +133,7 @@ func (r *kubePodRepository) UpdateImageForDeployment(deploymentName string, cont
 
 func (r *kubePodRepository) GetByNamespace(namespace string) *[]entity.KubePod {
 	entities := make([]entity.KubePod, 0)
-	var stringResult = r.sshCommandExecuter.RunSshCommand("192.168.55.196:22", "root", "Srvhb0420", "kubectl", "get pods -n "+namespace)
+	var stringResult = r.sshCommandExecuter.RunSshCommand("host","username","password", "kubectl", "get pods -n "+namespace)
 	podInfos := strings.Split(string(stringResult), "\n")
 	for _, podInfo := range podInfos[1:] {
 		podFields := strings.Fields(podInfo)
@@ -154,13 +154,13 @@ func (r *kubePodRepository) GetByNamespace(namespace string) *[]entity.KubePod {
 func (r *kubePodRepository) GetAll() *[]entity.KubePod {
 	entities := make([]entity.KubePod, 0)
 
-	var nameSpacesResult = r.sshCommandExecuter.RunSshCommand("192.168.55.196:22", "root", "Srvhb0420", "kubectl", "get namespaces")
+	var nameSpacesResult = r.sshCommandExecuter.RunSshCommand("host","username","password", "kubectl", "get namespaces")
 	namespaceInfos := strings.Split(nameSpacesResult, "\n")
 
 	for _, nameSpace := range namespaceInfos[1:] {
 		nameSpaceFields := strings.Fields(nameSpace)
 		if nameSpaceFields != nil && len(nameSpaceFields) >= 2 {
-			var stringResult = r.sshCommandExecuter.RunSshCommand("192.168.55.196:22", "root", "Srvhb0420", "kubectl", "get pods -n "+nameSpaceFields[0])
+			var stringResult = r.sshCommandExecuter.RunSshCommand("host","username","password", "kubectl", "get pods -n "+nameSpaceFields[0])
 			podInfos := strings.Split(string(stringResult), "\n")
 			for _, podInfo := range podInfos[1:] {
 				podFields := strings.Fields(podInfo)
