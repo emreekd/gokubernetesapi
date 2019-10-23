@@ -100,7 +100,7 @@ type deploymentInfoResult struct {
 }
 
 func GetDeploymentInfo(sshCommandExecuter executer.ISshCommandExecuter, deploymentFields []string, namespace string) *deploymentInfoResult {
-	cmdResult := sshCommandExecuter.RunSshCommand("host","username","password",, "kubectl",
+	cmdResult := sshCommandExecuter.RunSshCommand("host","username","password", "kubectl",
 		"get deployment "+deploymentFields[0]+" -n "+namespace+" -o=jsonpath='{.metadata.name}{\" \"}{..containers[0].name}{\" \"}{..containers[0].image}'")
 
 	newEntity := entity.Deployment{
