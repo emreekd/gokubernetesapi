@@ -12,8 +12,8 @@ type IKubeService interface {
 	GetPortForwardCommand(podname string, namespace string, destinationPort string, localPort string) string
 	GetNamespaces() response.GetNamespacesResponse
 	GetNodes() response.GetNodesResponse
-	UpdateImageForDeployment(deploymentName string, containerName string, newImage string, namespace string) bool
-	RestartPod(podName string, namespace string) bool
+	UpdateImageForDeployment(deploymentName string, containerName string, newImage string, namespace string) response.UpdateImageResponse
+	RestartPod(podName string, namespace string) response.RestartPodResponse
 }
 
 type kubeService struct {
@@ -91,12 +91,18 @@ func (ks *kubeService) GetPortForwardCommand(podname string, namespace string, d
 	return "kubectl port-forward " + podname + " -n " + namespace + " " + destinationPort + ":" + localPort
 }
 
-func (ks *kubeService) UpdateImageForDeployment(deploymentName string, containerName string, newImage string, namespace string) bool {
-	return ks.kubePodRepository.UpdateImageForDeployment(deploymentName, containerName, newImage, namespace)
+func (ks *kubeService) UpdateImageForDeployment(deploymentName string, containerName string, newImage string, namespace string) response.UpdateImageResponse {
+	result := ks.kubePodRepository.UpdateImageForDeployment(deploymentName, containerName, newImage, namespace)
+	return *(&response.UpdateImageResponse{
+		Success: result,
+	})
 }
 
-func (ks *kubeService) RestartPod(podName string, namespace string) bool {
-	return ks.kubePodRepository.RestartPod(podName, namespace)
+func (ks *kubeService) RestartPod(podName string, namespace string) response.RestartPodResponse {
+	result := ks.kubePodRepository.RestartPod(podName, namespace)
+	return *(&response.RestartPodResponse{
+		Success: result,
+	})
 }
 
 func (ks *kubeService) GetAllPods() response.GetAllPodsResponse {
