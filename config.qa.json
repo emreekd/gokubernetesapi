@@ -2,6 +2,6 @@
     "HostInfo":{
         "KubernetesHost":"",
         "HostUsername":"root",
-        "HostPassword":""
+        "HostPassword":"password"
     }
 }
