@@ -65,12 +65,7 @@ func (h *kubecontrollerhandler) deploymentUpdateHandler(w http.ResponseWriter, r
 
 	resp := h.kubeService.UpdateImageForDeployment(requestObj.DeploymentName, requestObj.ContainerName, requestObj.NewImage, requestObj.Namespace)
 
-	respObject := struct {
-		Success bool `json:"success"`
-	}{
-		Success: resp,
-	}
-	render.JSON(w, r, respObject)
+	render.JSON(w, r, resp)
 }
 
 func (h *kubecontrollerhandler) kubeNodesHandler(w http.ResponseWriter, r *http.Request) {

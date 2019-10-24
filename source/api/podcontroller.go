@@ -45,13 +45,7 @@ func (h *podcontrollerhandler) kubePodHandler(w http.ResponseWriter, r *http.Req
 
 	resp := h.kubeService.RestartPod(requestObj.PodName, requestObj.Namespace)
 
-	respObject := struct {
-		Success bool `json:"success"`
-	}{
-		Success: resp,
-	}
-
-	render.JSON(w, r, respObject)
+	render.JSON(w, r, resp)
 }
 
 func (h *podcontrollerhandler) getByNamespaceHandler(w http.ResponseWriter, r *http.Request) {
